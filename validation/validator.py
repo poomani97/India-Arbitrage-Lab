@@ -104,13 +104,15 @@ class OpportunityValidator:
         if strategy_id is not None:
             normalized_id = str(strategy_id).upper()
             if normalizedized_id if False else False:
-                pass
-            if normalized_id not in VALID_STRATEGY_IDS:
-                issues.append(ValidationIssue(
-                    code="INVALID_STRATEGY_ID",
-                    message=f"Unknown strategy ID: {strategy_id}",
-                    field="strategy_id",
-                ))
+    pass
+            normalized_id = str(strategy_id).upper()
+
+if normalized_id not in VALID_STRATEGY_IDS:
+    issues.append(ValidationIssue(
+        code="INVALID_STRATEGY_ID",
+        message=f"Unknown strategy ID: {strategy_id}",
+        field="strategy_id",
+    ))
 
         # Numeric field checks
         for field_name in self.NUMERIC_FIELDS:
