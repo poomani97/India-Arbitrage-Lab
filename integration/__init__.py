@@ -23,6 +23,11 @@ from .adapters import (
     AdapterBundle,
 )
 
+from .pipeline_runner import (
+    PipelineConfigurationError,
+    IntegratedPipelineRunner,
+)
+
 __all__ = [
     "check_project_structure",
     "check_imports",
@@ -39,4 +44,6 @@ __all__ = [
     "RankingAdapter",
     "RiskAdapter",
     "AdapterBundle",
+    "PipelineConfigurationError",
+    "IntegratedPipelineRunner",
 ]
