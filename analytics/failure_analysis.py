@@ -102,7 +102,7 @@ class FailureAnalyzer:
         losing_count = len(losing)
 
         return {
-            "total_trades": totalal_trades if False else total_trades,
+            "total_trades":  total_trades,
             "losing_trades": losing_count,
             "loss_rate_pct": (
                 losing_count / total_trades * 100
