@@ -1,9 +1,38 @@
 
+"""
+India Arbitrage Lab
+System Structure and Module Import Check
+"""
+
 from importlib import import_module
 from pathlib import Path
 
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
+
+
+REQUIRED_DIRS = [
+    "config",
+    "models",
+    "data",
+    "contracts",
+    "pricing",
+    "strategies",
+    "scanner",
+    "validation",
+    "ranking",
+    "risk",
+    "execution",
+    "portfolio",
+    "backtest",
+    "journal",
+    "analytics",
+    "ai",
+    "dashboard",
+    "tests",
+    "integration",
+]
+
 
 REQUIRED_MODULES = [
     "config.settings",
@@ -53,38 +82,17 @@ REQUIRED_MODULES = [
     "dashboard.backtest_page",
     "dashboard.portfolio_page",
     "dashboard.settings_page",
+    "integration.main_engine",
+    "integration.adapters",
+    "integration.pipeline_runner",
 ]
 
 
 def check_project_structure():
-    required_dirs = [
-        "config",
-        "models",
-        "data",
-        "contracts",
-        "pricing",
-        "strategies",
-        "scanner",
-        "validation",
-        "ranking",
-        "risk",
-        "execution",
-        "portfolio",
-        "backtest",
-        "journal",
-        "analytics",
-        "ai",
-        "dashboard",
-        "tests",
-        "integration",
-    ]
-
     missing = []
 
-    for folder in required_dirs:
-        path = ROOT_DIR / folder
-
-        if not path.exists():
+    for folder in REQUIRED_DIRS:
+        if not (ROOT_DIR / folder).exists():
             missing.append(folder)
 
     return missing
@@ -96,6 +104,7 @@ def check_imports():
     for module_name in REQUIRED_MODULES:
         try:
             import_module(module_name)
+
             results.append({
                 "module": module_name,
                 "status": "PASS",
@@ -106,60 +115,60 @@ def check_imports():
             results.append({
                 "module": module_name,
                 "status": "FAIL",
-                "error": str(exc),
+                "error": f"{type(exc).__name__}: {exc}",
             })
 
     return results
 
 
 def run_system_check():
-    print("=" * 50)
+    print("=" * 60)
     print("INDIA ARBITRAGE LAB - SYSTEM CHECK")
-    print("=" * 50)
+    print("=" * 60)
 
     missing_dirs = check_project_structure()
 
-    print("\n[1] DIRECTORY CHECK")
+    print("\nDIRECTORY CHECK")
 
     if not missing_dirs:
-        print("PASS: All required folders found.")
+        print("PASS: All required directories exist.")
     else:
-        print("FAIL: Missing folders:")
-        for folder in missing_dirs:
-            print(" -", folder)
+        for directory in missing_dirs:
+            print("MISSING:", directory)
 
-    print("\n[2] MODULE IMPORT CHECK")
+    print("\nMODULE IMPORT CHECK")
 
     results = check_imports()
 
     passed = 0
     failed = 0
 
-    for item in results:
-        if item["status"] == "PASS":
+    for result in results:
+        if result["status"] == "PASS":
             passed += 1
-            print("[PASS]", item["module"])
+            print("[PASS]", result["module"])
         else:
             failed += 1
-            print("[FAIL]", item["module"])
-            print("       Error:", item["error"])
+            print("[FAIL]", result["module"])
+            print("       ", result["error"])
 
-    print("\n[3] SUMMARY")
+    print("\nSUMMARY")
     print("Modules passed:", passed)
     print("Modules failed:", failed)
-    print("Folders missing:", len(missing_dirs))
+    print("Missing folders:", len(missing_dirs))
 
-    if failed == 0 and len(missing_dirs) == 0:
-        print("\nSYSTEM CHECK PASSED")
-        return True
+    success = failed == 0 and len(missing_dirs) == 0
 
-    print("\nSYSTEM CHECK FAILED")
-    return False
+    print(
+        "\nSYSTEM CHECK PASSED"
+        if success
+        else "\nSYSTEM CHECK FAILED"
+    )
+
+    return success
 
 
 if __name__ == "__main__":
-    success = run_system_check()
-
-    if not success:
+    if not run_system_check():
         raise SystemExit(1)
-      
+        
