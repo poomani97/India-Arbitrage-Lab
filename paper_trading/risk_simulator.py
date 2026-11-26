@@ -93,7 +93,12 @@ class PaperRiskSimulator:
             raise ValueError(
                 "Requested risk exceeds the maximum risk limit."
             )
-
+            
+            if self.current_capital <= 0:
+            raise ValueError(
+                "Current capital must be positive to open a simulated trade."
+            )
+            
         risk_amount = (
             self.current_capital * risk_percent / 100.0
         )
