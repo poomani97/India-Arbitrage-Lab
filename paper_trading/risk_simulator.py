@@ -90,7 +90,7 @@ class PaperRiskSimulator:
         )
 
         if risk_percent > self.max_risk_per_trade_pct:
-            raise Value ValueError(
+            raise ValueError(
                 "Requested risk exceeds the maximum risk limit."
             )
 
