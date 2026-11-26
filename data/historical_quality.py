@@ -2,7 +2,7 @@
 import csv
 import json
 import math
-from datetime import datetime
+from datetime import datetime, timezone 
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -57,6 +57,7 @@ class HistoricalQualityChecker:
 
         return resolved
 
+    
     def _parse_timestamp(self, value: Any) -> Optional[datetime]:
         if value is None:
             return None
@@ -67,7 +68,16 @@ class HistoricalQualityChecker:
             return None
 
         try:
-            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+            parsed = datetime.fromisoformat(
+                value.replace("Z", "+00:00")
+            )
+
+            if parsed.tzinfo is not None:
+                parsed = parsed.astimezone(timezone.utc)
+                parsed = parsed.replace(tzinfo=None)
+
+            return parsed
+
         except ValueError:
             pass
 
@@ -92,6 +102,7 @@ class HistoricalQualityChecker:
                 continue
 
         return None
+        
 
     def _parse_number(self, value: Any) -> Optional[float]:
         if value is None:
