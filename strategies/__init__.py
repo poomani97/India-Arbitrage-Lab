@@ -1,4 +1,13 @@
 
+"""
+India Arbitrage Lab
+Strategies Package
+
+Central exports for all strategy modules,
+registry, test runner and batch executor.
+Paper/research use only.
+"""
+
 from .base_strategy import BaseStrategy
 
 from .s01_cash_futures_carry import CashFuturesCarryStrategy
@@ -11,6 +20,20 @@ from .s07_index_etf_futures_fair_value import IndexETFFuturesFairValueStrategy
 from .s08_index_relative_value import IndexRelativeValueStrategy
 from .s09_cross_exchange_arbitrage import CrossExchangeArbitrageStrategy
 from .s10_event_implied_vs_realized_move import EventImpliedVsRealizedMoveStrategy
+
+from .strategy_registry import (
+    StrategyRegistry,
+    StrategyRegistryError,
+)
+
+from .strategy_test_runner import (
+    StrategyTestRunner,
+    StrategyTestResult,
+)
+
+from .strategy_batch import (
+    StrategyBatchExecutor,
+)
 
 
 STRATEGY_CLASSES = {
@@ -28,22 +51,26 @@ STRATEGY_CLASSES = {
 
 
 def get_strategy_registry():
-    """Return all registered strategy classes."""
+    """Return a copy of all registered strategy classes."""
     return STRATEGY_CLASSES.copy()
 
 
 def get_strategy(strategy_id, **kwargs):
-    """Create a strategy instance by its ID."""
-    strategy_class = STRATEGY_CLASSES.get(strategy_id.upper())
+    """Create a strategy instance using its strategy ID."""
+    strategy_id = str(strategy_id).strip().upper()
+
+    strategy_class = STRATEGY_CLASSES.get(strategy_id)
 
     if strategy_class is None:
-        raise ValueError(f"Unknown strategy ID: {strategy_id}")
+        raise ValueError(
+            f"Unknown strategy ID: {strategy_id}"
+        )
 
     return strategy_class(**kwargs)
 
 
 def get_all_strategies(**kwargs):
-    """Create instances of all ten strategy engines."""
+    """Create instances of all ten strategy classes."""
     return {
         strategy_id: strategy_class(**kwargs)
         for strategy_id, strategy_class in STRATEGY_CLASSES.items()
@@ -55,13 +82,9 @@ def get_strategy_ids():
     return list(STRATEGY_CLASSES.keys())
 
 
-def __all__ = [
+__all__ = [
     "BaseStrategy",
-    "STRATEGY_CLASSES",
-    "get_strategy_registry",
-    "get_strategy",
-    "get_all_strategies",
-    "get_strategy_ids",
+
     "CashFuturesCarryStrategy",
     "FuturesFairValueStrategy",
     "FuturesCalendarSpreadStrategy",
@@ -72,41 +95,18 @@ def __all__ = [
     "IndexRelativeValueStrategy",
     "CrossExchangeArbitrageStrategy",
     "EventImpliedVsRealizedMoveStrategy",
-]
 
+    "STRATEGY_CLASSES",
+    "get_strategy_registry",
+    "get_strategy",
+    "get_all_strategies",
+    "get_strategy_ids",
 
-from .strategy_registry import (
-    StrategyRegistry,
-    StrategyRegistryError,
-)
-
-from .strategy_test_runner import (
-    StrategyTestRunner,
-    StrategyTestResult,
-)
-
-from .strategy_batch import (
-    StrategyBatchExecutor,
-)
-
-__all__ = [
     "StrategyRegistry",
-    "StrategyRegistryError",
+    "StrategyRegistryError,
+
     "StrategyTestRunner",
-    "StrategyTestResult",
+    "StrategyTestResult,
+
     "StrategyBatchExecutor",
 ]
-
-from .strategy_registry import (
-    StrategyRegistry,
-    StrategyRegistryError,
-)
-
-from .strategy_test_runner import (
-    StrategyTestRunner,
-    StrategyTestResult,
-)
-
-from .strategy_batch import (
-    StrategyBatchExecutor,
-)
