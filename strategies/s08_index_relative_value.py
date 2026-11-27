@@ -78,7 +78,7 @@ class IndexRelativeValueStrategy(BaseStrategy):
         risk_buffer_percent: float = 0.10,
         default_lot_size: int = 1,
         enabled: bool = True,
-    ) -> -> None:
+    ) -> None:
 
         self.min_zscore = float(min_zscore)
         self.min_edge_per_unit = float(min_edge_per_unit)
