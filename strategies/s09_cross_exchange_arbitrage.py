@@ -61,13 +61,11 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
         risk_buffer_percent: float = 0.15,
         default_lot_size: int = 1,
         enabled: bool = True,
-    ) -> -> None:
-
+    ) -> None:
         self.min_edge_per_unit = float(min_edge_per_unit)
         self.risk_buffer_percent = float(risk_buffer_percent)
         self.default_lot_size = int(default_lot_size)
         self.enabled = bool(enabled)
-
         self._validate_config()
 
     # --------------------------------------------------
@@ -75,7 +73,6 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
     # --------------------------------------------------
 
     def _validate_config(self) -> None:
-
         if self.min_edge_per_unit < 0:
             raise ValueError("Minimum edge cannot be negative.")
 
@@ -90,7 +87,6 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
     # --------------------------------------------------
 
     def get_metadata(self) -> Dict[str, Any]:
-
         return {
             "strategy_id": self.STRATEGY_ID,
             "strategy_name": self.STRATEGY_NAME,
@@ -126,7 +122,6 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
         Negative:
             NSE is higher than BSE.
         """
-
         return bse_price - nse_price
 
     # --------------------------------------------------
@@ -142,10 +137,8 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
             return None
 
         try:
-
             timestamp = row["datetime"]
             symbol = str(row["symbol"]).strip()
-
             nse_price = float(row["nse_price"])
             bse_price = float(row["bse_price"])
 
@@ -169,16 +162,12 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
             # Price difference
             # ------------------------------------------
 
-            price_difference = (
-                self.calculate_price_difference(
-                    nse_price,
-                    bse_price,
-                )
+            price_difference = self.calculate_price_difference(
+                nse_price,
+                bse_price,
             )
 
-            absolute_difference = abs(
-                price_difference
-            )
+            absolute_difference = abs(price_difference)
 
             # ------------------------------------------
             # Difference percentage
@@ -189,18 +178,14 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
             )
 
             difference_percent = (
-                absolute_difference
-                / reference_price
+                absolute_difference / reference_price
             ) * 100.0
 
             # ------------------------------------------
             # Minimum threshold
             # ------------------------------------------
 
-            if (
-                absolute_difference
-                < self.min_edge_per_unit
-            ):
+            if absolute_difference < self.min_edge_per_unit:
                 return None
 
             # ------------------------------------------
@@ -208,22 +193,14 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
             # ------------------------------------------
 
             if price_difference > 0:
-
                 cheaper_exchange = "NSE"
                 expensive_exchange = "BSE"
-
-                observation = (
-                    "NSE_LOWER_BSE_HIGHER"
-                )
+                observation = "NSE_LOWER_BSE_HIGHER"
 
             elif price_difference < 0:
-
                 cheaper_exchange = "BSE"
                 expensive_exchange = "NSE"
-
-                observation = (
-                    "BSE_LOWER_NSE_HIGHER"
-                )
+                observation = "BSE_LOWER_NSE_HIGHER"
 
             else:
                 return None
@@ -259,17 +236,13 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
             ):
                 return None
 
-            total_costs = (
-                costs_per_unit * lot_size
-            )
+            total_costs = costs_per_unit * lot_size
 
             # ------------------------------------------
             # Gross difference value
             # ------------------------------------------
 
-            gross_edge = (
-                absolute_difference * lot_size
-            )
+            gross_edge = absolute_difference * lot_size
 
             # ------------------------------------------
             # Risk buffer
@@ -333,8 +306,8 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
             fill_probability = float(
                 row.get(
                     "fill_probability",
-                0.0,
-            )
+                    0.0,
+                )
             )
 
             liquidity_score = max(
@@ -356,18 +329,12 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
             # ------------------------------------------
 
             cost_breakdown = {
-                "estimated_costs_per_unit": (
-                    costs_per_unit
-                ),
-                "estimated_total_costs": (
-                    total_costs
-                ),
+                "estimated_costs_per_unit": costs_per_unit,
+                "estimated_total_costs": total_costs,
                 "risk_buffer_percent": (
                     self.risk_buffer_percent
                 ),
-                "risk_buffer_amount": (
-                    risk_buffer
-                ),
+                "risk_buffer_amount": risk_buffer,
                 "charges_verified": False,
                 "costs_are_estimates": True,
             }
@@ -494,7 +461,6 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
         opportunities: List[Opportunity] = []
 
         for _, dataframe_row in data.iterrows():
-
             opportunity = self.analyze_row(
                 dataframe_row.to_dict()
             )
@@ -523,4 +489,4 @@ class CrossExchangeArbitrageStrategy(BaseStrategy):
             OverflowError,
         ):
             return []
-          
+            
