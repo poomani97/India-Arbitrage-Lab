@@ -9,8 +9,8 @@ Purpose:
 
 Research / backtesting only.
 Live execution is disabled.
-
 This is a retrospective event-analysis strategy.
+
 It does NOT create a forward arbitrage opportunity from
 future realized movement that is not yet known.
 
@@ -76,22 +76,17 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
         risk_buffer_percent: float = 0.10,
         default_lot_size: int = 1,
         enabled: bool = True,
-    ) -> -> None:
-
+    ) -> None:
         self.minimum_deviation_percent = float(
             minimum_deviation_percent
         )
-
         self.risk_buffer_percent = float(
             risk_buffer_percent
         )
-
         self.default_lot_size = int(
             default_lot_size
         )
-
         self.enabled = bool(enabled)
-
         self._validate_config()
 
     # --------------------------------------------------
@@ -99,7 +94,6 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
     # --------------------------------------------------
 
     def _validate_config(self) -> None:
-
         if self.minimum_deviation_percent < 0:
             raise ValueError(
                 "Minimum deviation cannot be negative."
@@ -120,7 +114,6 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
     # --------------------------------------------------
 
     def get_metadata(self) -> Dict[str, Any]:
-
         return {
             "strategy_id": self.STRATEGY_ID,
             "strategy_name": self.STRATEGY_NAME,
@@ -168,7 +161,6 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
     ) -> float:
         """
         Absolute realized movement:
-
             abs(After - Before) / Before * 100
         """
 
@@ -202,7 +194,6 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
             return None
 
         try:
-
             timestamp = row["datetime"]
 
             symbol = str(
@@ -298,7 +289,6 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
             # ------------------------------------------
 
             if deviation_percent > 0:
-
                 event_result = (
                     "REALIZED_MOVE_EXCEEDED_IMPLIED"
                 )
@@ -308,7 +298,6 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
                 )
 
             elif deviation_percent < 0:
-
                 event_result = (
                     "REALIZED_MOVE_BELOW_IMPLIED"
                 )
@@ -318,7 +307,6 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
                 )
 
             else:
-
                 event_result = (
                     "REALIZED_MOVE_MATCHED_IMPLIED"
                 )
@@ -506,15 +494,11 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
                 "underlying_price_after_event": (
                     price_after
                 ),
-                "implied_move_percent": (
-                    implied_move
-                ),
+                "implied_move_percent": implied_move,
                 "realized_move_percent": (
                     realized_move
                 ),
-                "deviation_percent": (
-                    deviation_percent
-                ),
+                "deviation_percent": deviation_percent,
                 "absolute_deviation_percent": (
                     absolute_deviation_percent
                 ),
@@ -592,7 +576,6 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
         opportunities: List[Opportunity] = []
 
         for _, dataframe_row in data.iterrows():
-
             opportunity = self.analyze_row(
                 dataframe_row.to_dict()
             )
@@ -621,4 +604,4 @@ class EventImpliedVsRealizedMoveStrategy(BaseStrategy):
             OverflowError,
         ):
             return []
-          
+                
