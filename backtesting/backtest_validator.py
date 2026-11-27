@@ -88,16 +88,15 @@ class BacktestValidator:
 
             if value is None:
                 continue
-
-            if not self._is_number(value):
-                report.add_error(
-                    f"{field} must be a finite number."
-"
-                )
-            elif value <= 0:
-                report.add_error(
-                    f"{field} must be greater than zero."
-"
+                
+                if not self._is_number(value):
+    report.add_error(
+        f"{field} must be a finite number."
+    )
+elif value <= 0:
+    report.add_error(
+        f"{field} must be greater than zero."
+    )
             )
             else:
                 report.add_pass()
