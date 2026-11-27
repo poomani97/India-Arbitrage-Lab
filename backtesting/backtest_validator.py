@@ -63,11 +63,16 @@ class BacktestValidator:
 
     @staticmethod
     def _is_number(value):
-        return (
-            isinstance(value, (int, float))
-            and not isinstance(value, bool)
-            and math.isfinite(value)
-        )
+        if (
+            not isinstance(value, (int, float))
+            or isinstance(value, bool)
+        ):
+            return False
+
+        try:
+            return math.isfinite(value)
+        except (OverflowError, TypeError, ValueError):
+            return False
 
     def validate_trade(self, trade, report=None):
         if report is None:
@@ -88,27 +93,25 @@ class BacktestValidator:
 
             if value is None:
                 continue
-                
-                if not self._is_number(value):
-                    report.add_error(
-                        f"{field} must be a finite number."
-                    )
-                elif value <= 0:
-                    report.add_error(
-                        f"{field} must be greater than zero."
-                    )
-                else:
-                    report.add_pass()
 
-            pnl = self._get(trade, "pnl")
-            if pnl is not None:
+            if not self._is_number(value):
+                report.add_error(
+                    f"{field} must be a finite number."
+                )
+            elif value <= 0:
+                report.add_error(
+                    f"{field} must be greater than zero."
+                )
+            else:
+                report.add_pass()
+
+        pnl = self._get(trade, "pnl")
 
         if pnl is not None:
             if not self._is_number(pnl):
                 report.add_error(
                     "PnL must be a finite number."
-"
-            )
+                )
             else:
                 report.add_pass()
 
@@ -116,7 +119,10 @@ class BacktestValidator:
 
         if side is not None:
             if str(side).upper() not in (
-                "BUY", "SELL", "LONG", "SHORT"
+                "BUY",
+                "SELL",
+                "LONG",
+                "SHORT",
             ):
                 report.add_error(
                     f"Invalid trade side: {side}"
@@ -132,15 +138,13 @@ class BacktestValidator:
                 if exit_time < entry_time:
                     report.add_error(
                         "Exit time is before entry time."
-"
-                )
+                    )
                 else:
                     report.add_pass()
             except TypeError:
                 report.add_error(
                     "Entry and exit times cannot be compared."
-"
-            )
+                )
 
         for field in ("stop_loss", "take_profit"):
             value = self._get(trade, field)
@@ -151,13 +155,11 @@ class BacktestValidator:
             if not self._is_number(value):
                 report.add_error(
                     f"{field} must be a finite number."
-"
-            )
+                )
             elif value <= 0:
                 report.add_error(
                     f"{field} must be greater than zero."
-"
-            )
+                )
             else:
                 report.add_pass()
 
@@ -169,7 +171,6 @@ class BacktestValidator:
         if not isinstance(trades, (list, tuple)):
             report.add_error(
                 "Trades must be a list or tuple."
-"
             )
             return report
 
@@ -180,8 +181,7 @@ class BacktestValidator:
             if trade is None:
                 report.add_error(
                     f"Trade at index {index} is None."
-"
-            )
+                )
                 continue
 
             trade_id = self._get(trade, "trade_id")
@@ -205,7 +205,6 @@ class BacktestValidator:
         if not isinstance(metrics, dict):
             report.add_error(
                 "Metrics must be a dictionary."
-"
             )
             return report
 
@@ -229,8 +228,7 @@ class BacktestValidator:
             ):
                 report.add_error(
                     "total_trades must be a non-negative integer."
-"
-            )
+                )
             else:
                 report.add_pass()
 
@@ -238,13 +236,11 @@ class BacktestValidator:
             if not self._is_number(win_rate):
                 report.add_error(
                     "win_rate must be a finite number."
-"
-            )
+                )
             elif not 0 <= win_rate <= 100:
                 report.add_error(
                     "win_rate must be between 0 and 100."
-"
-            )
+                )
             else:
                 report.add_pass()
 
@@ -252,8 +248,7 @@ class BacktestValidator:
             if not self._is_number(total_pnl):
                 report.add_error(
                     "total_pnl must be a finite number."
-"
-            )
+                )
             else:
                 report.add_pass()
 
@@ -269,8 +264,7 @@ class BacktestValidator:
                 if not self._is_number(value):
                     report.add_error(
                         f"{field} must be a finite number."
-"
-                )
+                    )
                 else:
                     report.add_pass()
 
@@ -280,8 +274,7 @@ class BacktestValidator:
             if max_drawdown < 0:
                 report.add_warning(
                     "max_drawdown is negative; check its convention."
-"
-            )
+                )
 
         return report
 
@@ -291,19 +284,18 @@ class BacktestValidator:
         if not isinstance(result, dict):
             report.add_error(
                 "Backtest result must be a dictionary."
-"
             )
             return report
 
         if "trades" not in result:
             report.add_error(
                 "Backtest result is missing trades."
-"
             )
         else:
             trade_report = self.validate_trades(
                 result["trades"]
             )
+
             report.errors.extend(trade_report.errors)
             report.warnings.extend(trade_report.warnings)
             report.checks_passed += trade_report.checks_passed
@@ -312,12 +304,12 @@ class BacktestValidator:
         if "metrics" not in result:
             report.add_error(
                 "Backtest result is missing metrics."
-"
             )
         else:
             metric_report = self.validate_metrics(
                 result["metrics"]
             )
+
             report.errors.extend(metric_report.errors)
             report.warnings.extend(metric_report.warnings)
             report.checks_passed += metric_report.checks_passed
@@ -326,8 +318,9 @@ class BacktestValidator:
         trades = result.get("trades")
         metrics = result.get("metrics")
 
-        if isinstance(trades, (list, tuple)) and isinstance(
-            metrics, dict
+        if (
+            isinstance(trades, (list, tuple))
+            and isinstance(metrics, dict)
         ):
             reported_count = metrics.get("total_trades")
 
@@ -336,8 +329,7 @@ class BacktestValidator:
                     report.add_error(
                         "Reported trade count does not match "
                         "the actual trades list."
-"
-                )
+                    )
                 else:
                     report.add_pass()
 
