@@ -90,18 +90,18 @@ class BacktestValidator:
                 continue
                 
                 if not self._is_number(value):
-    report.add_error(
-        f"{field} must be a finite number."
-    )
-elif value <= 0:
-    report.add_error(
-        f"{field} must be greater than zero."
-    )
-            )
-            else:
-                report.add_pass()
+                    report.add_error(
+                        f"{field} must be a finite number."
+                    )
+                elif value <= 0:
+                    report.add_error(
+                        f"{field} must be greater than zero."
+                    )
+                else:
+                    report.add_pass()
 
-        pnl = self._get(trade, "pnl")
+            pnl = self._get(trade, "pnl")
+            if pnl is not None:
 
         if pnl is not None:
             if not self._is_number(pnl):
