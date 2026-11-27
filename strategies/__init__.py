@@ -2,14 +2,12 @@
 """
 India Arbitrage Lab
 Strategies Package
-
 Central exports for all strategy modules,
 registry, test runner and batch executor.
 Paper/research use only.
 """
 
 from .base_strategy import BaseStrategy
-
 from .s01_cash_futures_carry import CashFuturesCarryStrategy
 from .s02_futures_fair_value import FuturesFairValueStrategy
 from .s03_futures_calendar_spread import FuturesCalendarSpreadStrategy
@@ -58,7 +56,6 @@ def get_strategy_registry():
 def get_strategy(strategy_id, **kwargs):
     """Create a strategy instance using its strategy ID."""
     strategy_id = str(strategy_id).strip().upper()
-
     strategy_class = STRATEGY_CLASSES.get(strategy_id)
 
     if strategy_class is None:
@@ -84,7 +81,6 @@ def get_strategy_ids():
 
 __all__ = [
     "BaseStrategy",
-
     "CashFuturesCarryStrategy",
     "FuturesFairValueStrategy",
     "FuturesCalendarSpreadStrategy",
@@ -95,18 +91,14 @@ __all__ = [
     "IndexRelativeValueStrategy",
     "CrossExchangeArbitrageStrategy",
     "EventImpliedVsRealizedMoveStrategy",
-
     "STRATEGY_CLASSES",
     "get_strategy_registry",
     "get_strategy",
     "get_all_strategies",
     "get_strategy_ids",
-
     "StrategyRegistry",
-    "StrategyRegistryError,
-
+    "StrategyRegistryError",
     "StrategyTestRunner",
-    "StrategyTestResult,
-
+    "StrategyTestResult",
     "StrategyBatchExecutor",
 ]
