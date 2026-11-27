@@ -699,4 +699,6 @@ class BoxSpreadStrategy(BaseStrategy):
             KeyError,
             TypeError,
             ValueError,
+        ):
+            return []
            
