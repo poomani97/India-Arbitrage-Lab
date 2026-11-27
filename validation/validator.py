@@ -66,7 +66,11 @@ class OpportunityValidator:
         "score",
     )
 
-    def __init__(self, require_legs=False, require_positive_net_edge=True):
+    def __init__(
+        self,
+        require_legs=False,
+        require_positive_net_edge=True,
+    ):
         self.require_legs = require_legs
         self.require_positive_net_edge = require_positive_net_edge
 
@@ -87,32 +91,35 @@ class OpportunityValidator:
 
         strategy_id = self._get(opportunity, "strategy_id")
         opportunity_id = self._get(opportunity, "opportunity_id")
+
         if opportunity_id is None:
             opportunity_id = self._get(opportunity, "id")
 
         # Required field checks
         for field_name in self.REQUIRED_FIELDS:
             value = self._get(opportunity, field_name)
+
             if value is None:
-                issues.append(ValidationIssue(
-                    code="MISSING_REQUIRED_FIELD",
-                    message=f"Required field '{field_name}' is missing.",
-                    field=field_name,
-                ))
+                issues.append(
+                    ValidationIssue(
+                        code="MISSING_REQUIRED_FIELD",
+                        message=f"Required field '{field_name}' is missing.",
+                        field=field_name,
+                    )
+                )
 
         # Strategy ID validation
         if strategy_id is not None:
             normalized_id = str(strategy_id).upper()
-            if normalizedized_id if False else False:
-    pass
-            normalized_id = str(strategy_id).upper()
 
-if normalized_id not in VALID_STRATEGY_IDS:
-    issues.append(ValidationIssue(
-        code="INVALID_STRATEGY_ID",
-        message=f"Unknown strategy ID: {strategy_id}",
-        field="strategy_id",
-    ))
+            if normalized_id not in VALID_STRATEGY_IDS:
+                issues.append(
+                    ValidationIssue(
+                        code="INVALID_STRATEGY_ID",
+                        message=f"Unknown strategy ID: {strategy_id}",
+                        field="strategy_id",
+                    )
+                )
 
         # Numeric field checks
         for field_name in self.NUMERIC_FIELDS:
@@ -122,11 +129,13 @@ if normalized_id not in VALID_STRATEGY_IDS:
                 continue
 
             if not self._number(value):
-                issues.append(ValidationIssue(
-                    code="INVALID_NUMERIC_VALUE",
-                    message=f"'{field_name}' must be a finite number.",
-                    field=field_name,
-                ))
+                issues.append(
+                    ValidationIssue(
+                        code="INVALID_NUMERIC_VALUE",
+                        message=f"'{field_name}' must be a finite number.",
+                        field=field_name,
+                    )
+                )
 
         # Non-negative field checks
         non_negative_fields = (
@@ -141,12 +150,18 @@ if normalized_id not in VALID_STRATEGY_IDS:
         for field_name in non_negative_fields:
             value = self._get(opportunity, field_name)
 
-            if value is not None and self._number(value) and value < 0:
-                issues.append(ValidationIssue(
-                    code="NEGATIVE_VALUE",
-                    message=f"'{field_name}' cannot be negative.",
-                    field=field_name,
-                ))
+            if (
+                value is not None
+                and self._number(value)
+                and value < 0
+            ):
+                issues.append(
+                    ValidationIssue(
+                        code="NEGATIVE_VALUE",
+                        message=f"'{field_name}' cannot be negative.",
+                        field=field_name,
+                    )
+                )
 
         # Probability and confidence range checks
         for field_name in ("fill_probability", "confidence"):
@@ -154,11 +169,13 @@ if normalized_id not in VALID_STRATEGY_IDS:
 
             if value is not None and self._number(value):
                 if not 0 <= value <= 1:
-                    issues.append(ValidationIssue(
-                        code="OUT_OF_RANGE",
-                        message=f"'{field_name}' must be between 0 and 1.",
-                        field=field_name,
-                    ))
+                    issues.append(
+                        ValidationIssue(
+                            code="OUT_OF_RANGE",
+                            message=f"'{field_name}' must be between 0 and 1.",
+                            field=field_name,
+                        )
+                    )
 
         # Optional positive net-edge check
         net_edge = self._get(opportunity, "net_edge")
@@ -168,38 +185,54 @@ if normalized_id not in VALID_STRATEGY_IDS:
             and self._number(net_edge)
             and net_edge <= 0
         ):
-            issues.append(ValidationIssue(
-                code="NON_POSITIVE_NET_EDGE",
-                message="Net edge must be positive.",
-                field="net_edge",
-            ))
+            issues.append(
+                ValidationIssue(
+                    code="NON_POSITIVE_NET_EDGE",
+                    message="Net edge must be positive.",
+                    field="net_edge",
+                )
+            )
 
         # Legs check
         legs = self._get(opportunity, "legs")
 
         if self.require_legs:
             if not legs:
-                issues.append(ValidationIssue(
-                    code="MISSING_LEGS",
-                    message="Opportunity must contain at least one trade leg.",
-                    field="legs",
-                ))
+                issues.append(
+                    ValidationIssue(
+                        code="MISSING_LEGS",
+                        message="Opportunity must contain at least one trade leg.",
+                        field="legs",
+                    )
+                )
+
         elif legs is not None and not isinstance(legs, (list, tuple)):
-            issues.append(ValidationIssue(
-                code="INVALID_LEGS_FORMAT",
-                message="Legs must be a list or tuple when supplied.",
-                field="legs",
-            ))
+            issues.append(
+                ValidationIssue(
+                    code="INVALID_LEGS_FORMAT",
+                    message="Legs must be a list or tuple when supplied.",
+                    field="legs",
+                )
+            )
 
         return ValidationReport(
-            is_valid=not any(i.severity == "error" for i in issues),
+            is_valid=not any(
+                issue.severity == "error"
+                for issue in issues
+            ),
             opportunity_id=opportunity_id,
             strategy_id=strategy_id,
             issues=issues,
         )
 
-    def validate_many(self, opportunities) -> List[ValidationReport]:
-        return [self.validate(item) for item in opportunities]
+    def validate_many(
+        self,
+        opportunities,
+    ) -> List[ValidationReport]:
+        return [
+            self.validate(item)
+            for item in opportunities
+        ]
 
     def filter_valid(self, opportunities):
         valid = []
@@ -222,4 +255,4 @@ if normalized_id not in VALID_STRATEGY_IDS:
             "valid_count": len(valid),
             "invalid_count": len(invalid),
         }
-      
+        
