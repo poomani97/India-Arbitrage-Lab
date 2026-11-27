@@ -40,7 +40,6 @@ class PaperRiskSimulator:
             max_risk_per_trade_pct
         )
         self.fee_per_unit = float(fee_per_unit)
-
         self.trades = []
         self.next_trade_id = 1
 
@@ -93,18 +92,16 @@ class PaperRiskSimulator:
             raise ValueError(
                 "Requested risk exceeds the maximum risk limit."
             )
-            
-            if self.current_capital <= 0:
+
+        if self.current_capital <= 0:
             raise ValueError(
                 "Current capital must be positive to open a simulated trade."
             )
-            
+
         risk_amount = (
             self.current_capital * risk_percent / 100.0
         )
-
         risk_per_unit = abs(entry_price - stop_loss)
-
         quantity = risk_amount / risk_per_unit
 
         return {
@@ -190,10 +187,12 @@ class PaperRiskSimulator:
 
     def get_summary(self):
         total_trades = len(self.trades)
+
         winning_trades = sum(
             1 for trade in self.trades
             if trade["net_pnl"] > 0
         )
+
         losing_trades = sum(
             1 for trade in self.trades
             if trade["net_pnl"] < 0
@@ -227,4 +226,4 @@ class PaperRiskSimulator:
         self.trades.clear()
         self.next_trade_id = 1
         return self.get_summary()
-      
+        
