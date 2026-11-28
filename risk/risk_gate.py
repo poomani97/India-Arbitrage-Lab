@@ -10,6 +10,8 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List
 import math
 
+from models.field_access import get_field
+
 
 @dataclass
 class RiskDecision:
@@ -43,9 +45,7 @@ class RiskGate:
 
     @staticmethod
     def _get(obj: Any, key: str, default: Any = None) -> Any:
-        if isinstance(obj, dict):
-            return obj.get(key, default)
-        return getattr(obj, key, default)
+        return get_field(obj, key, default)
 
     @staticmethod
     def _number(value: Any) -> float:
@@ -177,11 +177,27 @@ class RiskGate:
     def filter_approved(
         self, opportunities: List[Any]
     ) -> List[Any]:
-        return [
-            opportunity
-            for opportunity in opportunities
-            if self.evaluate(opportunity).approved
-        ]
+        """Return approved opportunities and flag them risk_approved=True.
+
+        ExecutionRouter only accepts opportunities that carry this flag.
+        """
+        approved = []
+
+        for opportunity in opportunities:
+            if not self.evaluate(opportunity).approved:
+                continue
+
+            if isinstance(opportunity, dict):
+                opportunity["risk_approved"] = True
+            else:
+                try:
+                    opportunity.risk_approved = True
+                except (AttributeError, TypeError):
+                    pass
+
+            approved.append(opportunity)
+
+        return approved
 
     def get_rejected(
         self, opportunities: List[Any]
