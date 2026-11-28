@@ -3,16 +3,16 @@ from importlib import import_module
 
 
 STRATEGY_MODULES = [
-    "strategies.s01",
-    "strategies.s02",
-    "strategies.s03",
-    "strategies.s04",
-    "strategies.s05",
-    "strategies.s06",
-    "strategies.s07",
-    "strategies.s08",
-    "strategies.s09",
-    "strategies.s10",
+    "strategies.s01_cash_futures_carry",
+    "strategies.s02_futures_fair_value",
+    "strategies.s03_futures_calendar_spread",
+    "strategies.s04_put_call_parity",
+    "strategies.s05_synthetic_vs_actual_futures",
+    "strategies.s06_box_spread",
+    "strategies.s07_index_etf_futures_fair_value",
+    "strategies.s08_index_relative_value",
+    "strategies.s09_cross_exchange_arbitrage",
+    "strategies.s10_event_implied_vs_realized_move",
 ]
 
 
