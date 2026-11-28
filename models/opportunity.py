@@ -108,8 +108,8 @@ class Opportunity:
         if not 0 <= self.fill_probability <= 1:
             raise ValueError("fill_probability must be between 0 and 1")
 
-        if not 0 <= self.confidence_score <= 100:
-            raise ValueError("confidence_score must be between 0 and 100")
+        if not 0 <= self.confidence_score <= 1:
+            raise ValueError("confidence_score must be between 0 and 1")
 
         if not 0 <= self.opportunity_score <= 100:
             raise ValueError("opportunity_score must be between 0 and 100")
