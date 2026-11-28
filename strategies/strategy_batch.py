@@ -3,20 +3,21 @@
 India Arbitrage Lab
 STEP 21 - Strategy Batch Executor
 
-Runs registered enabled strategies on the same input data
-and collects their outputs independently.
-
-Observation/testing only.
+Executes each enabled strategy once and collects outputs.
+Testing and observation only.
 """
 
-from typing import Any, Dict, List
+import time
+from typing import Any, Dict
 
-from strategies.strategy_registry import StrategyRegistry
-from strategies.strategy_test_runner import StrategyTestRunner
+from strategies.strategy_test_runner import (
+    StrategyTestRunner,
+    StrategyTestResult,
+)
 
 
 class StrategyBatchExecutor:
-    def __init__(self, registry: StrategyRegistry):
+    def __init__(self, registry):
         self.registry = registry
         self.runner = StrategyTestRunner(registry)
 
@@ -26,44 +27,55 @@ class StrategyBatchExecutor:
         strategy_outputs = {}
 
         for name in self.registry.enabled_names():
-            result = self.runner.test_one(name, market_data)
-
-            results.append(result.to_dict())
-
-            if result.status != "PASS":
-                strategy_outputs[name] = []
-                continue
+            start = time.perf_counter()
 
             try:
                 strategy = self.registry.get(name)
+
+                # Execute only once per strategy
                 output = self.runner._execute(
-                    strategy,
-                    market_data,
+                    strategy, market_data
                 )
 
                 if output is None:
-                    output_items = []
+                    items = []
                 elif isinstance(output, list):
-                    output_items = output
+                    items = output
                 elif isinstance(output, tuple):
-                    output_items = list(output)
+                    items = list(output)
                 else:
-                    output_items = [output]
+                    items = [output]
 
-                strategy_outputs[name] = output_items
+                elapsed = time.perf_counter() - start
 
-                for item in output_items:
+                result = StrategyTestResult(
+                    strategy_name=name,
+                    status="PASS",
+                    output_count=len(items),
+                    duration_seconds=round(elapsed, 6),
+                )
+
+                strategy_outputs[name] = items
+
+                for item in items:
                     combined_outputs.append({
                         "strategy": name,
                         "output": item,
                     })
 
             except Exception as exc:
-                strategy_outputs[name] = []
-                results[-1]["status"] = "FAIL"
-                results[-1]["error"] = (
-                    f"{type(exc).__name__}: {exc}"
+                elapsed = time.perf_counter() - start
+
+                result = StrategyTestResult(
+                    strategy_name=name,
+                    status="FAIL",
+                    duration_seconds=round(elapsed, 6),
+                    error=f"{type(exc).__name__}: {exc}",
                 )
+
+                strategy_outputs[name] = []
+
+            results.append(result.to_dict())
 
         return {
             "strategies_tested": len(results),
