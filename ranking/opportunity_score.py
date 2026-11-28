@@ -14,6 +14,8 @@ Score range: 0 to 100
 from dataclasses import dataclass
 from typing import Any, Dict, List
 
+from models.field_access import get_field
+
 
 @dataclass
 class ScoreResult:
@@ -60,9 +62,7 @@ class OpportunityScorer:
 
     @staticmethod
     def _get_value(obj: Any, field: str, default: Any = 0.0) -> Any:
-        if isinstance(obj, dict):
-            return obj.get(field, default)
-        return getattr(obj, field, default)
+        return get_field(obj, field, default)
 
     @staticmethod
     def _safe_float(value: Any, default: float = 0.0) -> float:
@@ -153,6 +153,8 @@ class OpportunityScorer:
         if not isinstance(opportunity, dict):
             try:
                 opportunity.score = final_score
+                if hasattr(opportunity, "opportunity_score"):
+                    opportunity.opportunity_score = final_score
             except (AttributeError, TypeError):
                 pass
         else:
