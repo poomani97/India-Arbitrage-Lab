@@ -218,10 +218,11 @@ class MainApplicationEngine:
                 )
 
             elif self.load_data_fn is not None:
+                # load_data() takes no arguments (see class docstring)
                 data = self._run_stage(
                     report,
                     "data_load",
-                    self.load_data_fn,
+                    lambda _unused: self.load_data_fn(),
                     None,
                 )
 
@@ -293,8 +294,15 @@ class MainApplicationEngine:
 
             report.status = "SUCCESS"
 
-        except Exception:
+        except Exception as exc:
             report.status = "FAILED"
+
+            # Stage failures are already recorded by _run_stage. Anything
+            # raised elsewhere (e.g. no data and no loader) must be recorded
+            # here, otherwise the run fails with an empty error list.
+            message = f"{type(exc).__name__}: {exc}"
+            if not any(message in err for err in report.errors):
+                report.errors.append(message)
 
         finally:
             report.completed_at = self._utc_now()
