@@ -10,7 +10,7 @@ APP_VERSION = "0.1.0"
 # Current system mode
 APP_MODE = "RESEARCH"
 
-# Real-money trading is permanently disabled
+# Real-money trading is OFF by default. Flip only on purpose; GuardedBroker also needs arming.
 LIVE_TRADING_ENABLED = False
 
 # Paper trading defaults

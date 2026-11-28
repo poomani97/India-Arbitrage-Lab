@@ -1,0 +1,17 @@
+{
+  "columns": {
+    "spot_price": "NSE:NIFTY50-INDEX",
+    "futures_price": "NSE:NIFTY26DECFUT"
+  },
+  "volume_columns": {
+    "futures_volume": "NSE:NIFTY26DECFUT"
+  },
+  "constants": {
+    "symbol": "NIFTY",
+    "expiry_date": "2026-12-29"
+  },
+  "lot_size": 1,
+  "paper_cash": 10000000,
+  "max_capital_per_trade": 5000000,
+  "max_margin_per_trade": 5000000
+}
