@@ -11,6 +11,8 @@ Research / paper-trading use only.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
+from models.field_access import get_field
+
 
 @dataclass
 class QualificationResult:
@@ -49,9 +51,7 @@ class OpportunityQualification:
 
     @staticmethod
     def _get(obj, field_name, default=None):
-        if isinstance(obj, dict):
-            return obj.get(field_name, default)
-        return getattr(obj, field_name, default)
+        return get_field(obj, field_name, default)
 
     @staticmethod
     def _get_id(opportunity):
