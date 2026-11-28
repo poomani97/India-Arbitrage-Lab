@@ -8,6 +8,7 @@ class HistoricalDataCatalog:
         self.datasets: Dict[str, Dict[str, Any]] = {}
 
     def register(
+        self,
         dataset_id: str,
         file_path: str,
         symbol: str,
